@@ -1,4 +1,0 @@
-flask
-flask_cors
-azure-storage-blob
-requests
