@@ -17,6 +17,9 @@ def upload_to_blob(data, container_name, blob_name):
 global count
 count=0
 # Example route to handle incoming data and upload to Blob Storage
+@app.route('/',methods=['GET'])
+def hello():
+    return 'Hi'
 @app.route('/upload', methods=['POST'])
 def upload_data():
     print("hi")
