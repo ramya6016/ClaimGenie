@@ -1,0 +1,365 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Client Genie</title>
+<!-- Bootstrap CSS -->
+<link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
+<style>
+/* Custom CSS for navigation bar */
+body{
+    height: 100vh;
+    background-image: url(sample.webp);
+    background-repeat: no-repeat;
+    background-size: cover;
+}
+.navbar-custom {
+    background-color: #144663; 
+    display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+}
+
+/* Custom CSS for sliding menu */
+.sliding-menu {
+    position: fixed;
+    top: 0;
+    left: -250px; /* Initially hidden */
+    width: 250px;
+    height: 100%;
+    background-color: #333; /* Dark background */
+    transition: left 0.3s ease-in-out; /* Smooth transition */
+    z-index: 1000;
+}
+
+.sliding-menu ul {
+    list-style-type: none;
+    padding: 20px;
+}
+
+.sliding-menu ul li {
+    margin-bottom: 10px;
+}
+
+.sliding-menu ul li a {
+    color: #fff;
+    text-decoration: none;
+    font-size: 18px;
+}
+
+.sliding-menu ul li a:hover {
+    color: #ccc;
+}
+
+/* Center the content */
+.container {
+    margin-top: 50px;
+    text-align: center; /* Center content */
+}
+
+.close-icon {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    cursor: pointer;
+    font-size: 24px;
+    color: #fff;
+}
+.nav-links{
+    text-decoration: none;
+    padding: 15px;
+   color: #fff;}
+.nav-links:hover{
+    text-decoration: none;
+    color: #fff;
+}
+h2{
+    font-weight: bold;
+}
+.customer-container{
+    display: flex;
+    height: 80vh;
+    width: 40vw;
+    flex-wrap: wrap;
+    flex-direction: column;
+    justify-content: space-evenly;
+    border: 1px solid #000000;
+    border-radius: 10px;
+    background-color: #ffffff;
+}
+
+
+.button {
+  min-width: 150px;
+  min-height: 60px;
+  font-family: 'Nunito', sans-serif;
+  font-size: 22px;
+  text-transform: uppercase;
+  letter-spacing: 1.3px;
+  font-weight: 700;
+  color: #ffffff;
+  background: #144663;
+background:  linear-gradient(0deg, rgba(20,70,68,1) 0%, rgba(20,70,99,1) 51%, rgba(20,70,68,1) 100%);
+  border: none;
+  border-radius: 1000px;
+  box-shadow: 12px 12px 24px rgba(20,70,99,.64);
+  transition: all 0.3s ease-in-out 0s;
+  cursor: pointer;
+  outline: none;
+  position: relative;
+  padding: 10px;
+  }
+
+.button::before {
+content: '';
+  border-radius: 1000px;
+  min-width: calc(150px + 12px);
+  min-height: calc(60px + 12px);
+  border: 6px solid #144663;
+  box-shadow: 0 0 60px rgba(20,70,99,.64);
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  opacity: 0;
+  transition: all .3s ease-in-out 0s;
+}
+
+.button:hover, .button:focus {
+  color: #ffffff;
+  transform: translateY(-6px);
+}
+
+.button:hover::before, .button:focus::before {
+  opacity: 1;
+}
+
+.button::after {
+  content: '';
+  width: 30px; height: 30px;
+  border-radius: 100%;
+  border: 6px solid #144663;
+  position: absolute;
+  z-index: -1;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  animation: ring 1.5s infinite;
+}
+
+.button:hover::after, .button:focus::after {
+  animation: none;
+  display: none;
+}
+
+@keyframes ring {
+  0% {
+    width: 30px;
+    height: 30px;
+    opacity: 1;
+  }
+  100% {
+    width: 300px;
+    height: 300px;
+    opacity: 0;
+  }
+}
+.dropdown-menus{
+    height: 95px;
+}
+.dropdown-item-back :active{
+    background-color:  #144663;
+}
+.dropdown-item-back{
+    border-bottom: 2px solid #144663;
+}
+</style>
+</head>
+<body>
+    
+    <nav class="navbar navbar-expand-lg navbar-dark navbar-custom">
+        <button class="navbar-toggler custom-toggler" type="button" data-toggle="collapse" data-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation" onclick="toggleMenu()">
+            <span class="navbar-toggler-icon"><i class="bi bi-list"></i></span>
+        </button>
+        <h2> <a class="navbar-brand  mx-auto" href="#">Claim Genie</a></h2>
+       <nav class="navbar navbar-custom d-none d-lg-block font-weight-bold text-white "> 
+
+            <!-- Links -->
+            <ul class="navbar-nav navbar-custom ">
+                <span><a class="nav-links" href="#">Home</a></span>
+                <span><a class="nav-links" href="#">About Us</a></span>
+            </ul>
+          
+          </nav> 
+    </nav>
+    
+    
+    
+    <div class="sliding-menu" id="slidingMenu">
+        <!-- Close icon -->
+        <span class="close-icon" onclick="closeToggleMenu()">&times;</span>
+    
+        <!-- Menu items -->
+        <ul>
+            <li><a href="#">Home</a></li>
+            <li><a href="#">About Us</a></li>
+        </ul>
+    </div>
+    
+    
+<div class="container customer-container">
+    <div>
+    <h1 class="mt-3">Select an action you want to execute</h1>
+</div>
+    <!-- Dropdown menu to select action -->
+    <div class="dropdown-menus">
+    <!-- <div class="dropdown mt-3">
+        <button class="btn btn-secondary dropdown-toggle" type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+            Select Action
+        </button>
+        <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
+            <a class="dropdown-item" href="#" onclick="selectAction('recording')">Voice Recording</a>
+            <a class="dropdown-item" href="#" onclick="selectAction('image')">Call Transcript</a>
+            <a class="dropdown-item" href="#" onclick="selectAction('document')">Document Upload</a>
+            <a class="dropdown-item" href="#" onclick="selectAction('audio')">Audio Upload</a>
+        </div>
+    </div> -->
+    <div class="form-check form-check-inline">
+        <a class="dropdown-item" href="#" id="Voice" onclick="selectAction('recording')">Voice Recording</a>
+      </div>
+      
+      <div class="form-check form-check-inline">
+        <a class="dropdown-item" href="#" id="images" onclick="selectAction('image')">Call Transcript</a>
+      </div>
+      <div class="form-check form-check-inline">
+        <a class="dropdown-item" href="#" id="documents" onclick="selectAction('document')">Document Upload</a>
+      </div>
+      <div class="form-check form-check-inline">
+        <a class="dropdown-item" href="#" id="audios" onclick="selectAction('audio')">Audio Upload</a>
+      </div>
+    <!-- Voice Recording buttons -->
+    <div id="recordingButtons" class="mt-3" style="display: none;">
+        <button class="btn btn-primary mr-2" onclick="startRecording()">Start Recording</button>
+        <button class="btn btn-danger" onclick="stopRecording()">Stop Recording</button>
+    </div>
+
+    <!-- Image Scanning button -->
+    <div id="imageButton" class="mt-3" style="display: none;">
+        <input type="file" accept="image/*" onchange="scanImage(event)" class="form-control-file">
+    </div>
+
+    <!-- Document Upload (MP3/MP4) button -->
+    <div id="documentButton" class="mt-3" style="display: none;">
+        <input type="file" accept="audio/*,video/*" onchange="uploadDocument(event)" class="form-control-file">
+    </div>
+
+    <!-- Audio Upload button -->
+    <div id="audioButton" class="mt-3" style="display: none;">
+        <input type="file" accept="audio/*"  class="form-control-file">
+    </div>
+</div>
+
+    <!-- Submit Button -->
+    <!-- <div class="mt-4">
+        <button class="btn btn-success" >Submit</button>
+    </div> -->
+    
+
+<div class="wrap">
+    <button class="button" onclick="submitForm()">Submit</button>
+  </div>
+  
+  
+</div>
+
+<!-- Bootstrap JS and jQuery (required for Bootstrap) -->
+<script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.3/dist/umd/popper.min.js"></script>
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.bundle.min.js"></script>
+
+<script>
+// JavaScript code for toggling sliding menu
+function toggleMenu() {
+    var slidingMenu = document.getElementById('slidingMenu');
+    if (slidingMenu.style.left === '-250px') {
+        slidingMenu.style.left = '0';
+    } else {
+        slidingMenu.style.left = '-250px';
+    }
+}
+function closeToggleMenu() {
+    var slidingMenu = document.getElementById('slidingMenu');
+    slidingMenu.style.left = '-250px';
+}
+// JavaScript code for selecting action
+function selectAction(action) {
+    // Hide all action buttons
+    document.getElementById('recordingButtons').style.display = 'none';
+    document.getElementById('imageButton').style.display = 'none';
+    document.getElementById('documentButton').style.display = 'none';
+    document.getElementById('audioButton').style.display = 'none';
+    
+    document.getElementById('Voice').classList.remove('dropdown-item-back');
+    
+    document.getElementById('images').classList.remove('dropdown-item-back');
+    
+    document.getElementById('documents').classList.remove('dropdown-item-back');
+    
+    document.getElementById('audios').classList.remove('dropdown-item-back');
+    // Show buttons based on selected action
+    if (action === 'recording') {
+        document.getElementById('recordingButtons').style.display = 'block';
+        document.getElementById('Voice').classList.add('dropdown-item-back');
+    } else if (action === 'image') {
+        document.getElementById('imageButton').style.display = 'block';
+        
+        document.getElementById('images').classList.add('dropdown-item-back');
+    } else if (action === 'document') {
+        document.getElementById('documentButton').style.display = 'block';
+        
+        document.getElementById('documents').classList.add('dropdown-item-back');
+    } else if (action === 'audio') {
+        document.getElementById('audioButton').style.display = 'block';
+        
+        document.getElementById('audios').classList.add('dropdown-item-back');
+    }
+}
+
+// JavaScript code for submitting audio
+function submitForm() {
+    // Check if audio file is selected
+    var audioFile = document.getElementById('audioButton').getElementsByTagName('input')[0].files[0];
+    if (audioFile) {
+        // Assuming you want to submit the audio file using AJAX
+        var formData = new FormData();
+        formData.append('audio', audioFile);
+
+        // You can use fetch or XMLHttpRequest to send the audio file to the server
+        // Example using fetch:
+        fetch('http://127.0.0.1:5000/upload', {
+            method: 'POST',
+            body: formData
+        })
+        .then(response => {
+            if (response.ok) {
+                // Audio submitted successfully, you can show a success message or redirect
+                console.log('Audio submitted successfully');
+            } else {
+                // Audio submission failed
+                console.error('Error submitting audio');
+            }
+        })
+        .catch(error => {
+            console.error('Error:', error);
+        });
+    } else {
+        // No audio file selected, you can show an error message to the user
+        console.error('No audio file selected');
+    }
+}
+
+// JavaScript code for voice recording, image scanning, document upload, and audio upload...
+</script>
+</body>
+</html>
