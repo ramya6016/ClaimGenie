@@ -1,0 +1,628 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>JSON UI</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <style>
+        /* Style for sections */
+        body {
+            height: auto;
+            /* Removed background image */
+            padding-bottom: 50px;
+        }
+
+        .navbar-custom {
+            background-color: #144663;
+            display: flex;
+            flex-direction: row;
+            justify-content: space-between;
+        }
+
+        /* Custom CSS for sliding menu */
+        .sliding-menu {
+            position: fixed;
+            top: 0;
+            left: -250px;
+            /* Initially hidden */
+            width: 250px;
+            height: 100%;
+            background-color: #333;
+            /* Dark background */
+            transition: left 0.3s ease-in-out;
+            /* Smooth transition */
+            z-index: 1000;
+        }
+
+        .sliding-menu ul {
+            list-style-type: none;
+            padding: 20px;
+        }
+
+        .sliding-menu ul li {
+            margin-bottom: 10px;
+        }
+
+        .sliding-menu ul li a {
+            color: #fff;
+            text-decoration: none;
+            font-size: 18px;
+        }
+
+        .sliding-menu ul li a:hover {
+            color: #ccc;
+        }
+
+        /* Center the content */
+        .container {
+            margin-top: 50px;
+            text-align: center;
+            /* Center content */
+            animation: slideIn 0.5s cubic-bezier(0.4, 0, 0.2, 1) normal;
+        }
+
+        @keyframes slideIn {
+            from {
+                transform: translateY(-100%);
+            }
+
+            to {
+                transform: translateY(0);
+            }
+        }
+
+        .close-icon {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            cursor: pointer;
+            font-size: 24px;
+            color: #fff;
+        }
+
+        .close-icon-result {
+            cursor: pointer;
+            font-size: 24px;
+            color: black;
+        }
+
+        .nav-links {
+            text-decoration: none;
+            padding: 15px;
+            color: #fff;
+        }
+
+        .nav-links:hover {
+            text-decoration: none;
+            color: #fff;
+        }
+
+        h2 {
+            font-weight: bold;
+        }
+
+        .section {
+            border: 1px solid #dee2e6;
+            border-radius: 5px;
+            margin-bottom: 20px;
+        }
+
+        /* Style for section header */
+        .section-header {
+            cursor: pointer;
+            font-weight: bold;
+            margin-bottom: 5px;
+            color: #fff;
+            display: flex;
+            justify-content: space-between;
+            /* Aligns header content */
+            align-items: center;
+            /* Aligns header content */
+            background: linear-gradient(to right,#2c42a0, #455586, #7f795e);
+            padding: 10px;
+            border-top-left-radius: 5px;
+            border-top-right-radius: 5px;
+        }
+
+        /* Style for collapsed content */
+        .collapsed-content {
+            display: none;
+        }
+
+        /* Style for expanded content */
+        .expanded-content {
+            display: block;
+        }
+
+        /* Style for section content */
+        .section-content {
+            margin-left: 10px;
+            /* Add some space between header and content */
+        }
+
+        /* Gradient background colors */
+       .section {
+            background: linear-gradient(to right, #f5ecec, #bac0ce, #9dabc7);
+        }
+
+        /* Style for table */
+        .table th,
+        .table td {
+            border: none;
+            padding: 12px;
+            text-align: left;
+        }
+
+        /* Style for table header */
+        .table th {
+          background: linear-gradient(to right,#2c42a0, #455586, #7f795e);
+           
+            color: #fff;
+        }
+
+        /* Adjust the styling for the two columns */
+        .col-md-6 {
+            padding: 0 15px;
+            /* Add padding to the columns */
+        }
+
+       
+        #fileList {
+    border-right: 1px solid #dee2e6;
+    padding-right: 0; /* Remove padding */
+    margin-right: 0; /* Set margin to 0 */
+    height: calc(100vh - 110px);
+    overflow-y: auto;
+    justify-content: left;
+    
+}
+
+        #fileDetails {
+            padding-left: 15px;
+            /* Add padding to the left of the file details */
+            height: calc(100vh - 110px);
+            /* Set the height to fill the available space */
+            overflow-y: auto;
+            /* Add vertical scroll if needed */
+        }
+        .table th,
+.table td {
+    border: none;
+    padding: 12px;
+    text-align: left;
+    font-weight: bold; /* Make values bold */
+}
+
+/* Style for table header */
+
+
+/* Change color of field names */
+.table td:first-child {
+    color: #007bff; /* Change field name color to blue */
+}
+.section {
+  margin-bottom: 1rem;
+  border: 1px solid #007bff;
+  border-radius: 0.25rem;
+}
+.section-header {
+  background-color: #007bff;
+  color: #fff;
+  padding: 0.5rem;
+  border-radius: 0.25rem 0.25rem 0 0;
+}
+.table-responsive {
+  padding: 0.5rem;
+  background-color: #f8f9fa;
+}
+.table {
+  width: 100%;
+  margin-bottom: 1rem;
+  color: #212529;
+}
+.table-bordered {
+  border: 1px solid #dee2e6;
+}
+
+.font-weight-bold {
+  font-weight: bold;
+}
+.btn-custom {
+  background: linear-gradient(to right, #e0eafc, #cfdef3);
+  border: none;
+  color: #000;
+  transition: transform 0.3s ease;
+}
+.btn-custom:hover {
+  transform: scale(1.05);
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+/* Additional styles for responsiveness and alignment */@media (max-width: 768px) {
+  .col-md-6 {
+    float: none;
+    width: 100%;
+  }
+}
+    </style>
+</head>
+
+<body>
+  <nav class="navbar navbar-expand-lg navbar-dark navbar-custom">
+    <button class="navbar-toggler custom-toggler" type="button" data-toggle="collapse" data-target="#navbarNav"
+        aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation" onclick="toggleMenu()">
+        <span class="navbar-toggler-icon"><i class="bi bi-list"></i></span>
+    </button>
+    <h2><a class="navbar-brand  mx-auto" href="#">Claim Genie</a></h2>
+    <nav class="navbar navbar-custom d-none d-lg-block font-weight-bold text-white ">
+
+        <!-- Links -->
+        <ul class="navbar-nav navbar-custom ">
+            <span><a class="nav-links" href="#">Home</a></span>
+            <span><a class="nav-links" href="#">About Us</a></span>
+        </ul>
+
+    </nav>
+</nav>
+
+
+
+<div class="sliding-menu" id="slidingMenu">
+    <!-- Close icon -->
+    <span class="close-icon" onclick="closeToggleMenu()">&times;</span>
+
+    <!-- Menu items -->
+    <ul>
+        <li><a href="#">Home</a></li>
+        <li><a href="#">About Us</a></li>
+    </ul>
+</div>
+<div class="container mt-3">
+    <div class="row">
+        <div class="col-md-3">
+            <div class="section-header">Case Details</div>
+            <div id="fileList"></div>
+        </div>
+        <div class="col-md-6">
+          <div id="processingMessage" style="display: none; text-align: center; margin-top: 20px; font-weight: bold;">
+            Data is processing. Please wait and refresh.
+        </div>
+            <div id="fileDetails" style="display: none;"></div>
+        </div>
+    </div>
+</div>
+
+    <script>
+        // JSON data
+        var urlParams = new URLSearchParams(window.location.search);
+var dataEncoded = urlParams.get('data');
+console.log(dataEncoded);
+
+try {
+    // Decode and parse the data
+    var jsonList = JSON.parse(decodeURIComponent(dataEncoded));
+    
+    // Check if jsonData is an object and has the 'List' property
+    if (typeof jsonList === 'object' && jsonList !== null && 'List' in jsonList) {
+        var fileList = jsonList.List;
+        console.log(fileList);
+    } else {
+        console.error('Invalid JSON data format');
+    }
+} catch (error) {
+    console.error('Error parsing JSON:', error);
+}
+  // Get the element where you want to display the file list
+  var fileListContainer = document.getElementById("fileList");
+  //var fileListContainer = document.getElementById("fileList");
+        // Get the element where you want to display the file details
+        var fileDetailsContainer = document.getElementById("fileDetails");
+
+        // Function to display the file list
+        function displayFileList() {
+    // Clear previous file list content
+    fileListContainer.innerHTML = "";
+
+    // Create a row div for each file and append it to the container
+    fileList.forEach(function (file) {
+        var row = document.createElement("div");
+        row.classList.add("row");
+        var fileName = file.replace(/\.json$/, "");
+        // Create a column div for the file button and append it to the row
+        var col = document.createElement("div");
+        col.classList.add("col");
+        var button = document.createElement("button");
+        button.textContent = fileName;
+        button.classList.add("btn", "btn-block");
+        button.addEventListener("click", function () {
+            handleButtonClick(file);
+        });
+        col.appendChild(button);
+        row.appendChild(col);
+
+        // Append the row to the container
+        fileListContainer.appendChild(row);
+    });
+}
+
+        // Function to handle button click
+        function handleButtonClick(file) {
+            // Make an AJAX GET request to fetch JSON data
+            document.getElementById("processingMessage").style.display = "block";
+            //displayFileDetails(jsonData);
+            var xhr = new XMLHttpRequest();
+            var url="https://insurance-extraction.azurewebsites.net/get-blob/"
+            xhr.open("GET", url + encodeURIComponent(file), true);
+            xhr.onreadystatechange = function () {
+                if (xhr.readyState === 4 && xhr.status === 200) {
+                    // Parse the JSON response
+                    var responseData = JSON.parse(xhr.responseText);
+                    if(responseData==null)
+                    {
+                      console.log('Data is processing. Please wait and refresh');
+                      document.getElementById("fileDetails").style.display = "none";
+                      
+                    }
+                    else
+                    {
+                      document.getElementById("processingMessage").style.display = "none";
+                      
+                    // Display the JSON data in the UI
+                    displayFileDetails(responseData);
+                    }
+                }
+            };
+            xhr.send();
+        }
+
+        // Function to display file details UI
+        function displayFileDetails(data) {
+            // Show the file details container
+            fileDetailsContainer.style.display = "block";
+            // Clear previous details
+            fileDetailsContainer.innerHTML = "";
+            // Create UI for the response JSON
+            createUI(data, fileDetailsContainer);
+        }
+
+  // Function to display the file list
+ 
+  
+  // Function to display file details UI
+  
+  
+  // Display the file list initially
+  displayFileList();
+   
+        const jsonData = {
+  "policyholder": {
+    "address": "",
+    "phone": "",
+    "email": "",
+    "name": "Robert Taylor",
+    "dob": "March 10th, 1985",
+    "ssn": "",
+    "policy_id": "VEH789654",
+    "policy_expire": "December 31st of this year"
+  },
+  "caller": {
+    "callers_name": "Robert Taylor",
+    "calling_from": "",
+    "claim_status": "Accepted"
+  },
+  "provider": {
+    "address": "",
+    "name": "XYZ Auto Insurance",
+    "dob": "",
+    "ssn": "",
+    "npi": "",
+    "tax_id": ""
+  },
+  "patient": {
+    "name": "",
+    "dob": "",
+    "ssn": "",
+    "id": "",
+    "ssn_no": ""
+  },
+  "service": {
+    "date": "April 4th",
+    "charge_amount": 2500
+  },
+  "claim": {
+    "date": "April 4th",
+    "claim_type": "Vehicle Accident",
+    "claim_number": "ABC123456",
+    "call_reference": "N/A"
+  },
+  "healthcare_provider": {
+    "attending_physician": "",
+    "surgeon": "",
+    "other_providers": []
+  },
+  "diagnosis_treatment": {
+    "primary_diagnosis": "",
+    "treatment_procedures": [],
+    "prescribed_medications": []
+  },
+  "denial": {
+    "denied": false,
+    "reason_for_denial": "",
+    "denial_date": "",
+    "insurance_plan_type": "",
+    "confirmation_number": ""
+  },
+  "no_claim_on_file": {
+    "servicing_address": "",
+    "member_details": {
+      "id": "",
+      "full_name": "",
+      "dob": ""
+    },
+    "submission_mode": "",
+    "mailing_address": "",
+    "time_filling_limit": "",
+    "policy_details": {
+      "active_policy_date": "",
+      "duration": "",
+      "termination_date": "",
+      "active_during_dos": false
+    }
+  },
+  "policy_details": null,
+  "claim_in_process": {
+    "total_billed_charge": 0,
+    "receipt_date": "",
+    "processing_time": "",
+    "delay_reason": ""
+  },
+  "claim_paid": {
+    "correct_cheque_address": true,
+    "doctor_office": {
+      "name": "",
+      "telephone": ""
+    },
+    "claim_dates": {
+      "received": "",
+      "processed": "",
+      "paid": ""
+    },
+    "amounts": {
+      "allowed": 2500,
+      "paid": 2500
+    },
+    "patient_responsibility": 0,
+    "remaining_billed_amount_reason": "",
+    "payment_method": "Repair Shop",
+    "cheque_details": {
+      "number": "",
+      "type_of_check": "",
+      "date": "",
+      "address": ""
+    },
+    "cash_date": "",
+    "eob": "To be received by mail",
+    "enquiry_fax_number": ""
+  },
+  "member": {
+    "id": "",
+    "full_name": "",
+    "dob": ""
+  },
+  "doctor_office": {
+    "name": "",
+    "telephone": ""
+  },
+  "claim_dates": null,
+  "amounts": null,
+  "cheque_details": {
+    "number": "",
+    "type_of_check": "",
+    "date": "",
+    "address": ""
+  },
+  "additional_fields": {
+    "allowed_amount": 2500,
+    "paid_amount": 2500,
+    "patient_responsibility": 0,
+    "reprocess_days": "",
+    "cheque_payment_address": "",
+    "correct_address_confirmation": true
+  },
+  "billing_and_financial_details": [
+    {
+      "billed_amount": 2500,
+      "allowed_amount": 2500,
+      "co_pay": 0,
+      "deductible": 0,
+      "coinsurance": 0,
+      "claim_category": "Vehicle Accident"
+    }
+  ]
+};
+
+        function isEmpty(obj) {
+            return Object.values(obj).every(val => val === null || val === '' || (Array.isArray(val) && val.length === 0));
+        }
+
+        // Function to format text (replace underscores, capitalize first letter of each word, and convert rest to lowercase)
+        function formatText(text) {
+            return text.replace(/_/g, ' ').toLowerCase().replace(/(?:^|\s)\S/g, function (a) {
+                return a.toUpperCase();
+            });
+        }
+
+        // Function to create the UI
+        function createUI(data, parentElement) {
+        // Iterate through JSON data
+        for (const [key, value] of Object.entries(data)) {
+            // Check if value is null
+            if (typeof value !== 'undefined') {
+                // Check if the value is an object
+
+                if (typeof value === "object" && value !== null) {
+                    // Check if the object is not empty
+                    if (!isEmpty(value)) {
+                        // Add collapsible section for JSON fields
+                        const section = document.createElement("div");
+                        //section.appendChild('<table class="table table-bordered">');
+
+                        section.classList.add("section", "border", "border-primary", "rounded", "my-3");
+
+                        // Section header
+                        const header = document.createElement("div");
+                        header.classList.add("section-header", "bg-primary", "text-light", "p-2", "rounded-top");
+                        header.textContent = formatText(key);
+                        // Format text
+                        header.classList.add("collapsible");
+                        header.addEventListener("click", function () {
+                            this.nextElementSibling.classList.toggle("collapsed-content");
+                            this.nextElementSibling.classList.toggle("expanded-content");
+                        });
+                        section.appendChild(header);
+                        // Section content
+                        const content = document.createElement("table");
+                        //content.classList.add("collapsed-content", "p-3", "bg-light"); table-responsive p-3 bg-light
+                        content.classList.add("collapsed-content", 'table', 'table-bordered');
+                        createUI(value, content);
+                        // Recursively create UI elements for nested objects
+                        section.appendChild(content);
+                        // Append section to parent element
+                        parentElement.appendChild(section);
+
+                        // Expand section initially
+                        content.classList.add("expanded-content");
+                        content.classList.remove("collapsed-content");
+                    }
+                } else {
+                    // Display string fields in table format
+                    const row = document.createElement("tr");
+                    row.classList.add("font-weight-bold")
+                    const keyCell = document.createElement("td");
+                    const valueCell = document.createElement("td");
+                    keyCell.textContent = formatText(key);
+                    keyCell.style.fontWeight = "bold"; // Make field names bold
+                    if(value == '')
+                    {
+                      valueCell.textContent = '-';
+                    }
+                    else
+                    {
+                    valueCell.textContent = value;
+                    }
+                    row.appendChild(keyCell);
+                    row.appendChild(valueCell);
+                    parentElement.appendChild(row);
+                }
+            }
+        }
+    }
+
+    // Call the function to create the UI
+    const tableBody = document.getElementById("jsonTable").getElementsByTagName("tbody")[0];
+    //createUI(jsonData, tableBody);
+    </script>
+</body>
+
+</html>
