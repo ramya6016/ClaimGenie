@@ -9,10 +9,11 @@
 <style>
 /* Custom CSS for navigation bar */
 body{
-    height: 100vh;
+    height: auto;
     background-image: url(sample.webp);
     background-repeat: no-repeat;
     background-size: cover;
+    padding-bottom: 50px;
 }
 .navbar-custom {
     background-color: #144663; 
@@ -71,6 +72,11 @@ body{
     font-size: 24px;
     color: #fff;
 }
+.close-icon-result {
+    cursor: pointer;
+    font-size: 24px;
+    color: black;
+}
 .nav-links{
     text-decoration: none;
     padding: 15px;
@@ -93,7 +99,49 @@ h2{
     border-radius: 10px;
     background-color: #ffffff;
 }
+.result-container {
+    display: flex;
+    flex-direction: row;
+    flex-wrap: wrap;
+    align-items: stretch; /* Ensure the container stretches to fit its content */
+    border: 1px solid #000000;
+    border-radius: 10px;
+    background-color: #ffffff;
+    max-height: 80vh; /* Set maximum height */
+    overflow-y: auto; /* Enable vertical scrolling */
+    padding: 10px; /* Add padding for better appearance */
+    justify-content: center;
+}
+.results-container {
+    display: flex;
+    flex-direction: row;
+    flex-wrap: wrap;
+    align-items: stretch; /* Ensure the container stretches to fit its content */
+    background-color: #ffffff;
+    max-height: 80vh; /* Set maximum height */
+    overflow-y: auto; /* Enable vertical scrolling */
+    padding: 10px; /* Add padding for better appearance */
+    justify-content: center;
+}
+.result-section {
+    width:15vw;
+    margin: 10px;
+    padding: 15px;
+    
+    text-align: left;
+    
+}
 
+.result-section-header {
+    cursor: pointer;
+    font-weight: bold;
+    
+}
+
+.result-section-content {
+    display: none;
+    
+}
 
 .button {
   min-width: 150px;
@@ -217,6 +265,12 @@ content: '';
 #file-input {
   display: none;
 }
+.display-none{
+    display: none;
+}
+.arrow {
+    margin-right: 10px; /* Add some space between arrow and text */
+}
 </style>
 </head>
 <body>
@@ -251,7 +305,7 @@ content: '';
     </div>
     
     
-<div class="container customer-container">
+<div id="customer" class="container customer-container">
     <div>
     <h1 class="mt-3">Select an action you want to execute</h1>
 </div>
@@ -305,7 +359,7 @@ content: '';
         <!-- <input type="file"  class="form-control-file"> -->
         <div id="drop-zone">
             <span>Drag and drop file here or click to <span> Browse </span></span>
-            <input type="file" id="file-input" hidden>
+            <input type="file" id="file-input" >
           </div>
           
     </div>
@@ -320,7 +374,20 @@ content: '';
 
 <div class="wrap">
     <button class="button" onclick="submitForm()">Submit</button>
+    <button class="button" onclick="redirectAndAPICall()">Review Results</button>
+
   </div>
+  
+  
+</div>
+<!--<div id="result" class="container result-container display-none">
+
+    <div>
+    <h1 class="mt-3">Result <span class="close-icon-result" onclick="closeToggleResult()">&times;</span></h1> 
+    <div id="results" class="container results-container" > </div> -->
+    <!-- Dropdown menu to select action -->
+   <!--</div>--> 
+
   
   
 </div>
@@ -332,7 +399,33 @@ content: '';
 
 <script>
 // JavaScript code for toggling sliding menu
+function redirectAndAPICall() {
+    // Make an AJAX GET request
+    var xhr = new XMLHttpRequest();
+    xhr.open("POST", "https://insurance-extraction.azurewebsites.net/review", true);
+    xhr.onreadystatechange = function () {
+      if (xhr.readyState === 4 && xhr.status === 200) {
+        // Parse the JSON response
+        var response = JSON.parse(xhr.responseText);
+        console.log(response)
+        // Extract the data you want to pass
+        var dataToPass = response.file_names;
+        dataToPass={'List':dataToPass};
+        console.log(dataToPass);
+        // Redirect to the next page with data encoded in URL parameters
+        window.location.href = "test.html?data=" + encodeURIComponent(JSON.stringify(dataToPass));
+      }
+      //dataToPass={'List':['file1.json','file2.json','file3.json']}
+      //window.location.href = "test.html?data=" + encodeURIComponent(JSON.stringify(dataToPass));
+    };
+    xhr.send();
+  }
 var selectedAction;
+function closeToggleResult() {
+    document.getElementById("result").style.display='none'
+    document.getElementById('customer').style.visibility = 'visible';
+    
+}
 function toggleMenu() {
     var slidingMenu = document.getElementById('slidingMenu');
     if (slidingMenu.style.left === '-250px') {
@@ -345,6 +438,7 @@ function closeToggleMenu() {
     var slidingMenu = document.getElementById('slidingMenu');
     slidingMenu.style.left = '-250px';
 }
+var audioFile;
 // JavaScript code for selecting action
 function selectAction(action) {
     selectedAction = action;
@@ -379,33 +473,52 @@ function selectAction(action) {
         document.getElementById('audios').classList.add('dropdown-item-back');
     }
 }
-selectAction('BIOS')
+selectAction('audio')
 function submitForm() {
     // Check if audio file is selected
+    //const resultContainer = document.getElementById("result").style.display='block';
+    //document.getElementById('customer').style.visibility = 'hidden';
+    //document.getElementById('customer').style.overflow='hidden';
+    //document.getElementById("result").style.display='block';
+    //document.getElementById("result").scrollIntoView({  behavior: "smooth", block: "start" });
     if (selectedAction === 'BIOS') {
         var biosText = document.getElementById('BIOSButton').getElementsByTagName('input')[0].value;
         console.log('Submitting BIOS text:', biosText);
     } else if (selectedAction === 'audio') 
     {
-        var audioFile = document.getElementById('audioButton').getElementsByTagName('input')[0].files[0];
+      //var fileInput = document.getElementById('file-input');
+    
+    // Check if a file input element exists
+    //var audioFile = document.getElementById('drop-zone').getElementsByTagName('input')[0].files[0];
+    //var audioFile = document.getElementById('file-input').files[0];
+
+
+      console.log(audioFile)
+        
         if (audioFile) {
             console.log('Submitting audio file:', audioFile);
+            
             var formData = new FormData();
-            formData.append('audio', audioFile);
+            formData.append ("files",audioFile);
 
         // You can use fetch or XMLHttpRequest to send the audio file to the server
         // Example using fetch:
-            fetch('http://127.0.0.1:5000/upload', {
+            fetch('https://insurance-extraction.azurewebsites.net/upload-files', {
                 method: 'POST',
                 body: formData
             })
             .then(response => {
                 if (response.ok) {
                     // Audio submitted successfully, you can show a success message or redirect
-                    console.log('Document submitted successfully');}
+                    console.log('Document submitted successfully');
+                    alert("Document submitted successfully!");
+                    //esultContainer.classList.remove("display-none");
+                  }  
+                    
                 else {
                 // Audio submission failed
                 console.error('Error submitting Document');
+                alert("Error submitting Document. Please Try again");
                 }
         })
         .catch(error => {
@@ -416,35 +529,16 @@ function submitForm() {
             console.error('No audio file selected');
         }
     }
-    //var audioFile = document.getElementById('audioButton').getElementsByTagName('input')[0].files[0];
-    //if (audioFile) {
-        // Assuming you want to submit the audio file using AJAX
-       // var formData = new FormData();
-       // formData.append('audio', audioFile);
 
-        // You can use fetch or XMLHttpRequest to send the audio file to the server
-        // Example using fetch:
-       // fetch('http://127.0.0.1:5000/upload', {
-        //    method: 'POST',
-         //   body: formData
-       // })
-        //.then(response => {
-         //   if (response.ok) {
-                // Audio submitted successfully, you can show a success message or redirect
-              //  console.log('Audio submitted successfully');
-          //  } else {
-                // Audio submission failed
-            //    console.error('Error submitting audio');
-           // }
-        //})
-        //.catch(error => {
-          //  console.error('Error:', error);
-        //});
-    //} else {
-        // No audio file selected, you can show an error message to the user
-     //   console.error('No audio file selected');
+    // Show the result container
     
 }
+    
+
+  
+    
+
+
 const dropZone = document.getElementById('drop-zone');
 const fileInput = document.getElementById('file-input');
 
@@ -491,7 +585,7 @@ dropZone.addEventListener('drop', (event) => {
   const files = event.dataTransfer.files;
   const fileName = files[0].name; // Access first file name
   const fileSize = formatFileSize(files[0].size);
-
+   audioFile=files[0];
   // Update drop zone content with filename
   dropZone.textContent = `Dropped file: ${fileName} (${fileSize})`;
   console.log('Dropped files:', files);
@@ -501,7 +595,7 @@ dropZone.addEventListener('change', (event) => {
   const files = event.target.files;
   const fileName = files[0].name;
   const fileSize = formatFileSize(files[0].size) 
-
+  audioFile=files[0];
 
   dropZone.textContent = `Selected file: ${fileName} (${fileSize})`;
   console.log('Selected files:', files);
